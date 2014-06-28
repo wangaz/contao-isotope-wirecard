@@ -13,7 +13,8 @@
 	],
 	"support":{
 		"issues":"https://github.com/wangaz/contao-isotope-wirecard/issues",
-		"source":"https://github.com/wangaz/contao-isotope-wirecard"
+		"source":"https://github.com/wangaz/contao-isotope-wirecard",
+		"forum":"https://community.contao.org/de/showthread.php?49734"
 	},
 	"require":{
 		"php":">=5.3",
