@@ -1,0 +1,37 @@
+{
+	"name":"wangaz/contao-isotope-wirecard",
+	"description":"Wirecard payment module for Isotope Ecommerce",
+	"keywords":["isotope", "payment", "wirecard"],
+	"type":"contao-module",
+	"homepage":"http://www.wangaz.com",
+	"license":"CC-BY-SA 4.0",
+	"authors":[
+		{
+			"name":"Wangaz.",
+			"homepage":"http://www.wangaz.com"
+		}
+	],
+	"support":{
+		"issues":"https://github.com/wangaz/contao-isotope-wirecard/issues",
+		"source":"https://github.com/wangaz/contao-isotope-wirecard"
+	},
+	"require":{
+		"php":">=5.3",
+		"contao/core":"~3.2",
+		"contao-community-alliance/composer-installer": "*",
+		"isotope/isotope-core":">=2.0.0,<2.2",
+	},
+	"autoload": {
+		"classmap": ["src"]
+	},
+    "replace": {
+        "contao-legacy/isotope_wirecard": "*"
+    },
+	"extra":{
+		"contao": {
+			"symlinks":{
+				"src/system/modules/isotope-wirecard":"system/modules/isotope-wirecard"
+			}
+		}
+	}
+}
