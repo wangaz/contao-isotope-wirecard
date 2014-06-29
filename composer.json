@@ -1,7 +1,7 @@
 {
 	"name":"wangaz/contao-isotope-wirecard",
 	"description":"Wirecard payment module for Isotope Ecommerce",
-	"keywords":["isotope", "payment", "wirecard"],
+	"keywords":["contao", "isotope", "payment", "wirecard"],
 	"type":"contao-module",
 	"homepage":"http://www.wangaz.com",
 	"license":"CC-BY-SA 4.0",
