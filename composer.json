@@ -31,6 +31,7 @@
 	"extra":{
 		"contao": {
 			"symlinks":{
+				"src/assets/mootools/autogrow":"assets/mootools/autogrow",
 				"src/system/modules/isotope-wirecard":"system/modules/isotope-wirecard"
 			}
 		}
