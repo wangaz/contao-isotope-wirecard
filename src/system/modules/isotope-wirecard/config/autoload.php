@@ -13,12 +13,12 @@
 /**
  * Register PSR-0 namespace
  */
-NamespaceClassLoader::add('Isotope', 'system/modules/isotope_wirecard/library');
+NamespaceClassLoader::add('Isotope', 'system/modules/isotope-wirecard/library');
 
 
 /**
  * Register the templates
  */
 TemplateLoader::addFiles(array(
-	'iso_payment_wirecard'	=> 'system/modules/isotope_wirecard/templates'
+	'iso_payment_wirecard'	=> 'system/modules/isotope-wirecard/templates'
 ));
