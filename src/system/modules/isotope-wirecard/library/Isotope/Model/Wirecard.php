@@ -87,8 +87,8 @@ class Wirecard extends Postsale implements IsotopePayment {
             'serviceUrl'			=> \Environment::get('base') . \Controller::generateFrontendUrl($objContact->row()),
             'confirmUrl'			=> \Environment::get('base') . 'system/modules/isotope/postsale.php?mod=pay&id=' . $this->id,
             'customerStatement'		=> $strDescription,
-            'sennerland_id'			=> $objOrder->id,
-            'sennerland_uniqid'		=> $objOrder->uniqid,
+            'order_id'				=> $objOrder->id,
+            'order_uniqid'			=> $objOrder->uniqid,
             'secret'				=> $this->wirecard_secret,
             'REQUEST_TOKEN'			=> REQUEST_TOKEN,
         );
