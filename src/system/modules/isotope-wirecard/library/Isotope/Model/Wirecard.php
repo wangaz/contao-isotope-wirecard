@@ -27,7 +27,7 @@ class Wirecard extends Postsale implements IsotopePayment {
     public function processPostsale(IsotopeProductCollection $objOrder) {
         // check if both hashes match
         if (\Input::post('requestFingerprint') == $this->calcHashPost()) {
-            \System::log('The given hash does not match for Order ID "' . \Input::post('sennerland_id') . '" (Wirecard)', __METHOD__, TL_ERROR);
+            \System::log('The given hash does not match for Order ID "' . \Input::post('order_id') . '" (Wirecard)', __METHOD__, TL_ERROR);
 
             return;
         }
@@ -35,7 +35,7 @@ class Wirecard extends Postsale implements IsotopePayment {
         $strState = \Input::post('paymentState');
         
         // log
-        \System::log('Update of payment status of Order ID "' . \Input::post('sennerland_id') . '" (Wirecard): "' . $strState . '"', __METHOD__, TL_GENERAL);
+        \System::log('Update of payment status of Order ID "' . \Input::post('order_id') . '" (Wirecard): "' . $strState . '"', __METHOD__, TL_GENERAL);
         
         // ignore all cases except success
         if ($strState != 'SUCCESS')
@@ -43,7 +43,7 @@ class Wirecard extends Postsale implements IsotopePayment {
 
 		// perform checkout
         if (!$objOrder->checkout()) {
-            \System::log('Postsale checkout for Order ID "' . \Input::post('sennerland_id') . '" failed', __METHOD__, TL_ERROR);
+            \System::log('Postsale checkout for Order ID "' . \Input::post('order_id') . '" failed', __METHOD__, TL_ERROR);
 
             return;
         }
@@ -60,7 +60,7 @@ class Wirecard extends Postsale implements IsotopePayment {
      */
     public function getPostsaleOrder()
     {
-        return Order::findByPk(\Input::post('sennerland_id'));
+        return Order::findByPk(\Input::post('order_id'));
     }
 
     /**
