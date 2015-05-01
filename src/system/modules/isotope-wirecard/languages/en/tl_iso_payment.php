@@ -11,6 +11,6 @@
 
 array_insert($GLOBALS['TL_LANG']['tl_iso_payment'], 0, array(
 	'wirecard_customer_id' 			=> array('Customer ID', 'Your "customerId" at Wirecard'),
-	'wirecard_secret' 				=> array('Geheimnis', 'Your "secret" at Wirecard'),
-	'wirecard_contact'				=> array('Kontakt', 'Please select the page which contains your contact information'),
+	'wirecard_secret' 				=> array('Secret', 'Your "secret" at Wirecard'),
+	'wirecard_contact'				=> array('Contact', 'Please select the page which contains your contact information'),
 ));
