@@ -117,7 +117,7 @@ class Wirecard extends Postsale implements IsotopePayment {
 			$strParams .= \Input::post($strKey);
 		
 		// calc hash
-		return md5($strParams);
+		return hash_hmac('sha512', $strParams, $this->wirecard_secret);
     }
     
     /**
@@ -133,7 +133,7 @@ class Wirecard extends Postsale implements IsotopePayment {
 			$strParams .= $arrParams[$strKey];
 		
 		// calc hash
-		return md5($strParams);
+		return hash_hmac('sha512', $strParams, $this->wirecard_secret);
     }
 }
 
