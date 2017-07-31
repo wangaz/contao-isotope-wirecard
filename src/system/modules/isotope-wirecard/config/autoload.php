@@ -13,7 +13,9 @@
 /**
  * Register PSR-0 namespace
  */
-NamespaceClassLoader::add('Isotope', 'system/modules/isotope-wirecard/library');
+if (class_exists('NamespaceClassLoader')) {
+	NamespaceClassLoader::add('Isotope', 'system/modules/isotope-wirecard/library');
+}
 
 
 /**
