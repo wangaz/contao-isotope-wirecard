@@ -9,10 +9,12 @@
  * @package    isotope-wirecard
  */
 
+
 /**
- * Paletts
+ * Palettes
  */
-$GLOBALS['TL_DCA']['tl_iso_payment']['palettes']['wirecard'] = '{type_legend},name,label,type;{note_legend:hide},note;{config_legend:hide},new_order_status,minimum_total,maximum_total,countries,shipping_modules,product_types;{gateway_legend},wirecard_customer_id,wirecard_secret,wirecard_contact;{price_legend:hide},price,tax_class;{expert_legend:hide},guests,protected;{enabled_legend},enabled';
+$GLOBALS['TL_DCA']['tl_iso_payment']['palettes']['wirecard'] = str_replace('{price_legend', '{gateway_legend},wirecard_customer_id,wirecard_secret,wirecard_contact;{price_legend', $GLOBALS['TL_DCA']['tl_iso_payment']['palettes']['cash']);
+
 
 /**
  * Fields
@@ -47,7 +49,7 @@ array_insert($GLOBALS['TL_DCA']['tl_iso_payment']['fields'], 0, array(
 		'exclude'           => true,
 		'inputType'         => 'pageTree',
 		'foreignKey'        => 'tl_page.title',
-		'eval'              => array('mandatory' => true, 'fieldType' => 'radio'),
+		'eval'              => array('mandatory' => true, 'fieldType' => 'radio', 'tl_class' => 'clr'),
 		'sql'               => "int(10) unsigned NOT NULL default '0'",
 		'relation'          => array('type'=>'hasOne', 'load'=>'lazy'),
 	),

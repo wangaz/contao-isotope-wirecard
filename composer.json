@@ -18,19 +18,21 @@
 	},
 	"require":{
 		"php":">=5.3",
-		"contao/core":"~3.2",
-		"contao-community-alliance/composer-installer":"*",
-		"isotope/isotope-core":">=2.0.0,<2.2"
+		"contao/core-bundle":"^3.2 || ^4.3",
+		"contao-community-alliance/composer-plugin": "^2.4 || ^3.0",
+		"isotope/isotope-core":"^2.0"
 	},
 	"autoload": {
-		"classmap": ["src"]
+		"psr-0": {
+			"Isotope\\": "src/system/modules/isotope-wirecard/library"
+		}
 	},
-    "replace": {
-        "contao-legacy/isotope_wirecard": "*"
-    },
+	"replace": {
+		"contao-legacy/isotope_wirecard": "*"
+	},
 	"extra":{
 		"contao": {
-			"symlinks":{
+			"sources": {
 				"src/system/modules/isotope-wirecard":"system/modules/isotope-wirecard"
 			}
 		}
