@@ -4,7 +4,7 @@
 	"keywords":["contao", "isotope", "payment", "wirecard"],
 	"type":"contao-module",
 	"homepage":"http://www.wangaz.com",
-	"license":"CC-BY-SA 4.0",
+	"license":"CC-BY-SA-4.0",
 	"authors":[
 		{
 			"name":"Wangaz.",
