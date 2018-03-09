@@ -82,7 +82,7 @@ class Wirecard extends Postsale implements IsotopePayment {
             'currency'				=> $objOrder->currency,
             'orderDescription'		=> $strDescription,
             'successUrl'			=> \Environment::get('base') . $objModule->generateUrlForStep('complete', $objOrder),
-            'cancelUrl'				=> \Environment::get('base') . $objModule->generateUrlForStep('process'),
+            'cancelUrl'				=> \Environment::get('base') . $objModule->generateUrlForStep('failed'),
             'failureUrl'			=> \Environment::get('base') . $objModule->generateUrlForStep('failed'),
             'serviceUrl'			=> \Environment::get('base') . \Controller::generateFrontendUrl($objContact->row()),
             'confirmUrl'			=> \Environment::get('base') . 'system/modules/isotope/postsale.php?mod=pay&id=' . $this->id,
