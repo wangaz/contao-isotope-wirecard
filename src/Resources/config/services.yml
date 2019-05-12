@@ -1,0 +1,6 @@
+services:
+  Wangaz\EventListener\RequestListener:
+    arguments:
+      - '@database_connection'
+    tags:
+      - { name: kernel.event_listener, event: kernel.request, priority: 31 }
