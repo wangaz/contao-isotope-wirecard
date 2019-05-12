@@ -29,7 +29,7 @@
 		"symfony/http-kernel": "^3.2 || ^4.0"
 	},
 	"autoload": {
-		"psr-0": {
+		"psr-4": {
 			"Wangaz\\ContaoIsotopeWirecardBundle": "src/"
 		}
 	},
