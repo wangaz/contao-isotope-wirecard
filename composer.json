@@ -30,7 +30,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Wangaz\\ContaoIsotopeWirecardBundle": "src/"
+			"Wangaz\\ContaoIsotopeWirecardBundle\\": "src/"
 		}
 	},
 	"extra": {
