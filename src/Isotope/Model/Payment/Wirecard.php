@@ -101,9 +101,10 @@ class Wirecard extends Postsale implements IsotopePayment
             'fail-redirect-url' => $failUrl,
             'cancel-redirect-url' => $failUrl,
             'notifications' => [
-                'notification' => [
+                'format' => 'application/json',
+                'notification' => [[
                     'url' => $basePath.'/system/modules/isotope/postsale.php?mod=pay&id='.$this->id,
-                ],
+                ]],
             ],
         ];
 
