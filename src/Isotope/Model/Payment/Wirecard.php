@@ -196,7 +196,7 @@ class Wirecard extends Postsale implements IsotopePayment
             throw new \RuntimeException('Unsupported signature algorithm "'.$signatureAlgorithm.'"');
         }
 
-        $signature = hash_hmac('sha256', $responseBase64, $this->secret, true);
+        $signature = hash_hmac('sha256', $responseBase64, $this->wirecardSecret, true);
 
         return hash_equals($signature, base64_decode($signatureBase64, true));
     }
