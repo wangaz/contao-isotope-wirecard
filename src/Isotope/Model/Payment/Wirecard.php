@@ -57,10 +57,20 @@ class Wirecard extends Postsale implements IsotopePayment
         $this->request = System::getContainer()->get('request_stack')->getCurrentRequest();
     }
 
+    /**
+     * This does not actually show a form. Instead it initialises the Wirecard
+     * payment session and throws a RedirectResponseException to redirect the
+     * user to the Hosted Wirecard Payment Page.
+     * 
+     * @throws RedirectResponseException
+     */
     public function checkoutForm(IsotopeProductCollection $order, Module $module)
     {
         // Base path for URLs
         $basePath = $this->request->getSchemeAndHttpHost().$this->request->getBasePath();
+
+        // Redirect URL in case of any failure
+        $failUrl = $basePath.'/'.$module->generateUrlForStep('failed', $order);
 
         // Define account holder
         $accountHolder = [];
@@ -73,7 +83,8 @@ class Wirecard extends Postsale implements IsotopePayment
         if (!empty($billingAddress->lastname)) {
             $accountHolder['last-name'] = $billingAddress->lastname;
         } else {
-            throw new \RuntimeException('No last name defined in billing address, which is required by Wirecard.');
+            System::log('No last name defined in billing address for order ID '.$order->getId().', which is required by Wirecard', __METHOD__, TL_ERROR);
+            throw new RedirectResponseException($failUrl);
         }
 
         // Define the rest of the parameters
@@ -87,8 +98,13 @@ class Wirecard extends Postsale implements IsotopePayment
             ],
             'account-holder' => $accountHolder,
             'success-redirect-url' => $basePath.'/'.$module->generateUrlForStep('complete', $order),
-            'fail-redirect-url' => $basePath.'/'.$module->generateUrlForStep('failed', $order),
-            'cancel-redirect-url' => $basePath.'/'.$module->generateUrlForStep('failed', $order),
+            'fail-redirect-url' => $failUrl,
+            'cancel-redirect-url' => $failUrl,
+            'notifications' => [
+                'notification' => [
+                    'url' => $basePath.'/system/modules/isotope/postsale.php?mod=pay&id='.$this->id,
+                ],
+            ],
         ];
 
         // Check for payment method
@@ -110,11 +126,16 @@ class Wirecard extends Postsale implements IsotopePayment
             'body' => json_encode(['payment' => $parameters]),
         ]);
 
-        $result = @json_decode((string) $response->getBody(), true);
+        try {
+            $result = @json_decode((string) $response->getBody(), true);
+        } catch (\Exception $e) {
+            System::log('Error while initialising Wirecard payment session for order ID '.$order->getId().': '.$e->getMessage(), __METHOD__, TL_ERROR);
+            throw new RedirectResponseException($failUrl);
+        }
 
         if (empty($result) || !isset($result['payment-redirect-url'])) {
-            System::log('Invalid response from Wirecard server for order '.$order->getUniqueId(), __METHOD__, TL_ERROR);
-            throw new RedirectResponseException($basePath.'/'.$module->generateUrlForStep('failed', $order));
+            System::log('Invalid response from Wirecard server for order ID '.$order->getId(), __METHOD__, TL_ERROR);
+            throw new RedirectResponseException($failUrl);
         }
 
         throw new RedirectResponseException($result['payment-redirect-url']);
@@ -129,7 +150,7 @@ class Wirecard extends Postsale implements IsotopePayment
         }
 
         if ('success' !== $paymentResponse['payment']['transaction-state']) {
-            System::log('Unsuccessful transation via Wirecard for order ' . $paymentResponse['payment']['request-id'], __METHOD__, TL_ERROR);
+            System::log('Unsuccessful transaction via Wirecard for order ' . $paymentResponse['payment']['request-id'], __METHOD__, TL_ERROR);
             return null;
         }
         
@@ -138,7 +159,25 @@ class Wirecard extends Postsale implements IsotopePayment
 
     public function processPostsale(IsotopeProductCollection $order)
     {
-        throw new \Exception(__METHOD__.' not implemented');
+        file_put_contents('wirecard.log', print_r($this->request->request, true));
+
+        $paymentResponse = $this->getResponseData();
+
+        // Check transaction state again
+        if ('success' !== $paymentResponse['payment']['transaction-state']) {
+            return;
+        }
+
+        // Perform checkout
+        if (!$order->checkout()) {
+            System::log('Postsale checkout for order ID '.$order->getId().' failed', __METHOD__, TL_ERROR);
+            return;
+        }
+
+        // update status
+        $order->date_paid = time();
+        $order->updateOrderStatus($this->new_order_status);
+        $order->save();
     }
 
     /**
@@ -153,7 +192,7 @@ class Wirecard extends Postsale implements IsotopePayment
         $signatureAlgorithm = $post->get('response-signature-algorithm');
 
         if (!$this->isValidSignature($responseBase64, $signatureBase64, $signatureAlgorithm)) {
-            System::log('Invalid response signature.', __METHOD__, TL_ERROR);
+            System::log('Invalid Wirecard response signature.', __METHOD__, TL_ERROR);
             return null;
         }
 
