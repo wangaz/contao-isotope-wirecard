@@ -1,5 +1,5 @@
 services:
-  Wangaz\EventListener\RequestListener:
+  Wangaz\ContaoIsotopeWirecardBundle\EventListener\RequestListener:
     arguments:
       - '@database_connection'
     tags:

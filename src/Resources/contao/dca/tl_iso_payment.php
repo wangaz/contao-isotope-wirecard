@@ -14,55 +14,64 @@ declare(strict_types=1);
 /*
  * Fields
  */
-$GLOBALS['TL_DCA']['tl_iso_payment']['fields']['wirecardUser'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardUser'],
-    'exclude' => true,
-    'inputType' => 'text',
-    'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
-    'sql' => "varchar(255) NOT NULL default ''",
-];
-
-$GLOBALS['TL_DCA']['tl_iso_payment']['fields']['wirecardPassword'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardPassword'],
-    'exclude' => true,
-    'inputType' => 'text',
-    'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
-    'sql' => "varchar(255) NOT NULL default ''",
-];
-
-$GLOBALS['TL_DCA']['tl_iso_payment']['fields']['wirecardMerchantID'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardMerchantID'],
-    'exclude' => true,
-    'inputType' => 'text',
-    'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
-    'sql' => "varchar(255) NOT NULL default ''",
-];
-
-$GLOBALS['TL_DCA']['tl_iso_payment']['fields']['wirecardSecret'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardSecret'],
-    'exclude' => true,
-    'inputType' => 'text',
-    'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
-    'sql' => "varchar(255) NOT NULL default ''",
-];
-
-$GLOBALS['TL_DCA']['tl_iso_payment']['fields']['wirecardTestAPI'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardTestAPI'],
-    'exclude' => true,
-    'inputType' => 'checkbox',
-    'eval' => ['tl_class' => 'w50'],
-    'sql' => "char(1) NOT NULL default ''",
-];
-
-$GLOBALS['TL_DCA']['tl_iso_payment']['fields']['wirecardContact'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardContact'],
-    'exclude' => true,
-    'inputType' => 'pageTree',
-    'foreignKey' => 'tl_page.title',
-    'eval' => ['mandatory' => true, 'fieldType' => 'radio', 'tl_class' => 'clr'],
-    'sql' => "int(10) unsigned NOT NULL default '0'",
-    'relation' => ['type' => 'hasOne', 'load' => 'lazy'],
-];
+$GLOBALS['TL_DCA']['tl_iso_payment']['fields'] = array_merge($GLOBALS['TL_DCA']['tl_iso_payment']['fields'], [
+    'wirecardUser' => [
+        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardUser'],
+        'exclude' => true,
+        'inputType' => 'text',
+        'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
+        'sql' => "varchar(255) NOT NULL default ''",
+    ],
+    'wirecardPassword' => [
+        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardPassword'],
+        'exclude' => true,
+        'inputType' => 'text',
+        'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
+        'sql' => "varchar(255) NOT NULL default ''",
+    ],
+    'wirecardMerchantId' => [
+        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardMerchantId'],
+        'exclude' => true,
+        'inputType' => 'text',
+        'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
+        'sql' => "varchar(255) NOT NULL default ''",
+    ],
+    'wirecardSecret' => [
+        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardSecret'],
+        'exclude' => true,
+        'inputType' => 'text',
+        'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
+        'sql' => "varchar(255) NOT NULL default ''",
+    ],
+    'wirecardPaymentMethod' => [
+        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardPaymentMethod'],
+        'exclude' => true,
+        'inputType' => 'select',
+        'options' => [
+            'creditcard',
+            'alipay-xborder',
+            'bancontact',
+            'eps',
+            'ideal',
+            'paybox',
+            'paypal',
+            'paysafecard',
+            'p24',
+            'sepadirectdebit',
+            'sofortbanking',
+        ],
+        'reference' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardPaymentMethods'],
+        'eval' => ['includeBlankOption' => true, 'blankOptionLabel' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardPaymentMethodBlank'], 'tl_class' => 'w50'],
+        'sql' => "varchar(255) NOT NULL default ''",
+    ],
+    'wirecardTestApi' => [
+        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardTestApi'],
+        'exclude' => true,
+        'inputType' => 'checkbox',
+        'eval' => ['tl_class' => 'w50 m12'],
+        'sql' => "char(1) NOT NULL default ''",
+    ],
+]);
 
 /*
  * Palettes
@@ -73,9 +82,9 @@ $GLOBALS['TL_DCA']['tl_iso_payment']['palettes']['wirecard'] = $GLOBALS['TL_DCA'
     ->addLegend('gateway_legend', 'price_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_BEFORE)
     ->addField('wirecardUser', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->addField('wirecardPassword', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-    ->addField('wirecardMerchantID', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+    ->addField('wirecardMerchantId', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->addField('wirecardSecret', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-    ->addField('wirecardTestAPI', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-    ->addField('wirecardContact', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+    ->addField('wirecardPaymentMethod', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+    ->addField('wirecardTestApi', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('wirecard', 'tl_iso_payment')
 ;

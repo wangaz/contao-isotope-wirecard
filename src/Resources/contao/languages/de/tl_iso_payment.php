@@ -11,8 +11,25 @@ declare(strict_types=1);
  * @license CC-BY-SA-4.0
  */
 
-array_insert($GLOBALS['TL_LANG']['tl_iso_payment'], 0, [
-    'wirecard_customer_id' => ['Kunden-ID', 'Ihre "customerId" bei Wirecard'],
-    'wirecard_secret' => ['Geheimnis', 'Ihr "secret" bei Wirecard'],
-    'wirecard_contact' => ['Kontakt', 'Wählen Sie die Seite aus, auf der Ihre Kontaktinformationen hinterlegt sind'],
+$GLOBALS['TL_LANG']['tl_iso_payment'] = array_merge($GLOBALS['TL_LANG']['tl_iso_payment'], [
+    'wirecardUser' => ['Benutzername', 'Ihr Benutzername bei Wirecard.'],
+    'wirecardPassword' => ['Passwort', 'Ihr Passwort bei Wirecard.'],
+    'wirecardMerchantId' => ['Händler ID', 'Ihre Händler ID bei Wirecard.'],
+    'wirecardSecret' => ['Secret', 'Ihr Secret bei Wirecard.'],
+    'wirecardPaymentMethod' => ['Beazhlmethode', 'Die Bezahlmethode, die bei Wirecard benutzt werden soll.'],
+    'wirecardPaymentMethodBlank' => 'Alle verfügbaren Bezahlmethoden',
+    'wirecardPaymentMethods' => [
+        'creditcard' => 'Kreditkarte',
+        'alipay-xborder' => 'Alipay Cross-border',
+        'bancontact' => 'Bancontact',
+        'eps' => 'eps-Überweisung',
+        'ideal' => 'iDEAL',
+        'paybox' => 'paybox',
+        'paypal' => 'PayPal',
+        'paysafecard' => 'paysafecard',
+        'p24' => 'Przelewy24 (P24)',
+        'sepadirectdebit' => 'SEPA-Lastschrift',
+        'sofortbanking' => 'Sofortüberweisung',
+    ],
+    'wirecardTestApi' => ['Test API', 'Die Testumgebung aktivieren..'],
 ]);
