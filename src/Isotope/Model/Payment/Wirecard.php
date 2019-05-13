@@ -160,8 +160,6 @@ class Wirecard extends Postsale implements IsotopePayment
 
     public function processPostsale(IsotopeProductCollection $order)
     {
-        file_put_contents('wirecard.log', print_r($this->request->request, true));
-
         $paymentResponse = $this->getResponseData();
 
         // Check transaction state again
