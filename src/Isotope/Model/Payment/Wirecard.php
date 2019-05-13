@@ -45,12 +45,11 @@ class Wirecard extends Postsale implements IsotopePayment
      */
     protected const API_REGISTER = '/api/payment/register';
 
-
     /**
      * This does not actually show a form. Instead it initialises the Wirecard
      * payment session and throws a RedirectResponseException to redirect the
      * user to the Hosted Wirecard Payment Page.
-     * 
+     *
      * @throws RedirectResponseException
      */
     public function checkoutForm(IsotopeProductCollection $order, Module $module)
@@ -140,10 +139,11 @@ class Wirecard extends Postsale implements IsotopePayment
         }
 
         if ('success' !== $paymentResponse['payment']['transaction-state']) {
-            System::log('Unsuccessful transaction via Wirecard for order ' . $paymentResponse['payment']['request-id'], __METHOD__, TL_ERROR);
+            System::log('Unsuccessful transaction via Wirecard for order '.$paymentResponse['payment']['request-id'], __METHOD__, TL_ERROR);
+
             return null;
         }
-        
+
         return Order::findOneByUniqid($paymentResponse['payment']['request-id']);
     }
 
@@ -159,6 +159,7 @@ class Wirecard extends Postsale implements IsotopePayment
         // Perform checkout
         if (!$order->checkout()) {
             System::log('Postsale checkout for order ID '.$order->getId().' failed', __METHOD__, TL_ERROR);
+
             return;
         }
 
@@ -173,7 +174,9 @@ class Wirecard extends Postsale implements IsotopePayment
      */
     protected function getPaymentResponse(): ?array
     {
-        parse_str($this->getRequest()->getContent(), $parameters);
+        // Do not use parse_str here, since parse_str automatically applies urldecode(), which destroys the base64url encoded content
+        preg_match_all('/([-\w]+)=([^&]+)/', $this->getRequest()->getContent(), $pairs);
+        $parameters = array_combine($pairs[1], $pairs[2]);
 
         $responseBase64 = $parameters['response-base64'];
         $signatureBase64 = $parameters['response-signature-base64'];
@@ -181,10 +184,29 @@ class Wirecard extends Postsale implements IsotopePayment
 
         if (!$this->isValidSignature($responseBase64, $signatureBase64, $signatureAlgorithm)) {
             System::log('Invalid Wirecard response signature.', __METHOD__, TL_ERROR);
+
             return null;
         }
 
-        return json_decode(base64_decode($responseBase64, true), true);
+        // Wirecard uses "Base 64 Encoding with URL and Filename Safe Alphabet"
+        $responseBase64 = strtr($responseBase64, '-_', '+/');
+        $decodedResponse = base64_decode($responseBase64, true);
+
+        if (false === $decodedResponse) {
+            System::log('Could not decode base64 encoded response: '.$responseBase64, __METHOD__, TL_ERROR);
+
+            return null;
+        }
+
+        $jsonDecodedResponse = json_decode($decodedResponse, true);
+
+        if (false === $jsonDecodedResponse) {
+            System::log('Could not JSON decode response: '.$decodedResponse, __METHOD__, TL_ERROR);
+
+            return null;
+        }
+
+        return $jsonDecodedResponse;
     }
 
     /**
