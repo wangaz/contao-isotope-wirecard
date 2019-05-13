@@ -11,4 +11,4 @@ declare(strict_types=1);
  * @license CC-BY-SA-4.0
  */
 
-$GLOBALS['TL_LANG']['MODEL']['tl_iso_payment']['wirecard'] = ['Wirecard'];
+$GLOBALS['TL_LANG']['MODEL']['tl_iso_payment']['wirecard'] = ['Wirecard Payment Page'];
