@@ -1,3 +1,7 @@
+[![](https://img.shields.io/maintenance/yes/2019.svg)](https://github.com/wangaz/contao-isotope-wirecard)
+[![](https://img.shields.io/packagist/v/wangaz/contao-isotope-wirecard.svg)](https://packagist.org/packages/wangaz/contao-isotope-wirecard)
+[![](https://img.shields.io/packagist/dt/wangaz/contao-isotope-wirecard.svg)](https://packagist.org/packages/wangaz/contao-isotope-wirecard)
+
 Wirecard Payment Module for Isotope for Contao
 ======================
 
