@@ -20,6 +20,7 @@ use Isotope\Interfaces\IsotopePayment;
 use Isotope\Interfaces\IsotopeProductCollection;
 use Isotope\Model\Payment\Postsale;
 use Isotope\Model\ProductCollection\Order;
+use Symfony\Component\HttpFoundation\Request;
 
 class Wirecard extends Postsale implements IsotopePayment
 {
@@ -44,18 +45,6 @@ class Wirecard extends Postsale implements IsotopePayment
      */
     protected const API_REGISTER = '/api/payment/register';
 
-    /**
-     * The request.
-     *
-     * @var \Symfony\Component\HttpFoundation\Request
-     */
-    protected $request;
-
-    public function __construct(\Contao\Database\Result $databaseResult)
-    {
-        parent::__construct($databaseResult);
-        $this->request = System::getContainer()->get('request_stack')->getCurrentRequest();
-    }
 
     /**
      * This does not actually show a form. Instead it initialises the Wirecard
@@ -67,7 +56,7 @@ class Wirecard extends Postsale implements IsotopePayment
     public function checkoutForm(IsotopeProductCollection $order, Module $module)
     {
         // Base path for URLs
-        $basePath = $this->request->getSchemeAndHttpHost().$this->request->getBasePath();
+        $basePath = $this->getRequest()->getSchemeAndHttpHost().$this->getRequest()->getBasePath();
 
         // Redirect URL in case of any failure
         $failUrl = $basePath.'/'.$module->generateUrlForStep('failed', $order);
@@ -101,7 +90,7 @@ class Wirecard extends Postsale implements IsotopePayment
             'fail-redirect-url' => $failUrl,
             'cancel-redirect-url' => $failUrl,
             'notifications' => [
-                'format' => 'application/json',
+                'format' => 'application/json-signed',
                 'notification' => [[
                     'url' => $basePath.'/system/modules/isotope/postsale.php?mod=pay&id='.$this->id,
                 ]],
@@ -144,7 +133,7 @@ class Wirecard extends Postsale implements IsotopePayment
 
     public function getPostsaleOrder()
     {
-        $paymentResponse = $this->getResponseData();
+        $paymentResponse = $this->getPaymentResponse();
 
         if (null === $paymentResponse) {
             return null;
@@ -160,7 +149,7 @@ class Wirecard extends Postsale implements IsotopePayment
 
     public function processPostsale(IsotopeProductCollection $order)
     {
-        $paymentResponse = $this->getResponseData();
+        $paymentResponse = $this->getPaymentResponse();
 
         // Check transaction state again
         if ('success' !== $paymentResponse['payment']['transaction-state']) {
@@ -182,20 +171,20 @@ class Wirecard extends Postsale implements IsotopePayment
     /**
      * Returns the Wirecard response data, when valid and present.
      */
-    protected function getResponseData(): ?array
+    protected function getPaymentResponse(): ?array
     {
-        $post = $this->request->request;
+        parse_str($this->getRequest()->getContent(), $parameters);
 
-        $responseBase64 = $post->get('response-base64');
-        $signatureBase64 = $post->get('response-signature-base64');
-        $signatureAlgorithm = $post->get('response-signature-algorithm');
+        $responseBase64 = $parameters['response-base64'];
+        $signatureBase64 = $parameters['response-signature-base64'];
+        $signatureAlgorithm = $parameters['response-signature-algorithm'];
 
         if (!$this->isValidSignature($responseBase64, $signatureBase64, $signatureAlgorithm)) {
             System::log('Invalid Wirecard response signature.', __METHOD__, TL_ERROR);
             return null;
         }
 
-        return json_decode(base64_decode($post->get('response-base64'), true), true);
+        return json_decode(base64_decode($responseBase64, true), true);
     }
 
     /**
@@ -210,5 +199,13 @@ class Wirecard extends Postsale implements IsotopePayment
         $signature = hash_hmac('sha256', $responseBase64, $this->secret, true);
 
         return hash_equals($signature, base64_decode($signatureBase64, true));
+    }
+
+    /**
+     * Return the Symfony Request object of the current request.
+     */
+    protected function getRequest(): Request
+    {
+        return System::getContainer()->get('request_stack')->getCurrentRequest();
     }
 }
