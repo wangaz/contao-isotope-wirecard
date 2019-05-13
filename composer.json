@@ -1,40 +1,39 @@
 {
-	"name":"wangaz/contao-isotope-wirecard",
-	"description":"Wirecard payment module for Isotope Ecommerce",
+	"name": "wangaz/contao-isotope-wirecard",
+	"description": "Wirecard payment module for Contao Isotope Ecommerce",
 	"keywords":["contao", "isotope", "payment", "wirecard"],
-	"type":"contao-module",
-	"homepage":"http://www.wangaz.com",
-	"license":"CC-BY-SA-4.0",
+	"type": "contao-bundle",
+	"homepage": "http://www.wangaz.com",
+	"license": "CC-BY-SA-4.0",
 	"authors":[
 		{
-			"name":"Wangaz.",
-			"homepage":"http://www.wangaz.com"
+			"name": "Wangaz.",
+			"homepage": "http://www.wangaz.com"
+		},
+		{
+			"name": "inspiredminds",
+			"homepage": "https://www.inspiredminds.at"
 		}
 	],
-	"support":{
-		"issues":"https://github.com/wangaz/contao-isotope-wirecard/issues",
-		"source":"https://github.com/wangaz/contao-isotope-wirecard",
-		"forum":"https://community.contao.org/de/showthread.php?49734"
+	"support": {
+		"issues": "https://github.com/wangaz/contao-isotope-wirecard/issues",
+		"source": "https://github.com/wangaz/contao-isotope-wirecard",
+		"forum": "https://community.contao.org/de/showthread.php?49734"
 	},
-	"require":{
-		"php":">=5.3",
-		"contao/core-bundle":"^3.2 || ^4.3",
-		"contao-community-alliance/composer-plugin": "^2.4 || ^3.0",
-		"isotope/isotope-core":"^2.0"
+	"require": {
+		"php": ">=7.1",
+		"contao/core-bundle": "^4.4",
+		"isotope/isotope-core": "^2.0",
+		"symfony/config": "^3.2 || ^4.0",
+		"symfony/dependency-injection": "^3.2 || ^4.0",
+		"symfony/http-kernel": "^3.2 || ^4.0"
 	},
 	"autoload": {
-		"psr-0": {
-			"Isotope\\": "src/system/modules/isotope-wirecard/library"
+		"psr-4": {
+			"Wangaz\\ContaoIsotopeWirecardBundle\\": "src/"
 		}
 	},
-	"replace": {
-		"contao-legacy/isotope_wirecard": "*"
-	},
-	"extra":{
-		"contao": {
-			"sources": {
-				"src/system/modules/isotope-wirecard":"system/modules/isotope-wirecard"
-			}
-		}
+	"extra": {
+		"contao-manager-plugin": "Wangaz\\ContaoIsotopeWirecardBundle\\ContaoManagerPlugin"
 	}
 }
