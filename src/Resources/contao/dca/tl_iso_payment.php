@@ -64,12 +64,13 @@ $GLOBALS['TL_DCA']['tl_iso_payment']['fields'] = array_merge($GLOBALS['TL_DCA'][
         'eval' => ['includeBlankOption' => true, 'blankOptionLabel' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardPaymentMethodBlank'], 'tl_class' => 'w50'],
         'sql' => "varchar(255) NOT NULL default ''",
     ],
-    'wirecardTestApi' => [
-        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardTestApi'],
+    'wirecardBaseUrl' => [
+        'label' => &$GLOBALS['TL_LANG']['tl_iso_payment']['wirecardBaseUrl'],
         'exclude' => true,
-        'inputType' => 'checkbox',
-        'eval' => ['tl_class' => 'w50 m12'],
-        'sql' => "char(1) NOT NULL default ''",
+        'default' => 'wpp-test.wirecard.com',
+        'inputType' => 'text',
+        'eval' => ['tl_class' => 'w50', 'maxlength' => 255, 'mandatory' => true, 'rgxp' => 'url'],
+        'sql' => "varchar(255) NOT NULL default ''",
     ],
 ]);
 
@@ -84,7 +85,7 @@ $GLOBALS['TL_DCA']['tl_iso_payment']['palettes']['wirecard'] = $GLOBALS['TL_DCA'
     ->addField('wirecardPassword', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->addField('wirecardMerchantId', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->addField('wirecardSecret', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+    ->addField('wirecardBaseUrl', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->addField('wirecardPaymentMethod', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-    ->addField('wirecardTestApi', 'gateway_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('wirecard', 'tl_iso_payment')
 ;

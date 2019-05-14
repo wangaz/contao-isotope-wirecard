@@ -25,20 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 class Wirecard extends Postsale implements IsotopePayment
 {
     /**
-     * The API host.
-     *
-     * @var string
-     */
-    protected const API_HOST = 'https://wpp.wirecard.com';
-
-    /**
-     * The API test host.
-     *
-     * @var string
-     */
-    protected const API_TEST_HOST = 'https://wpp-test.wirecard.com';
-
-    /**
      * The API payment end point.
      *
      * @var string
@@ -105,8 +91,23 @@ class Wirecard extends Postsale implements IsotopePayment
             ];
         }
 
-        $domain = $this->wirecardTestApi ? self::API_TEST_HOST : self::API_HOST;
-        $client = new \GuzzleHttp\Client(['base_uri' => $domain]);
+        // Process base URL
+        $baseUrl = $this->wirecardBaseUrl;
+
+        if (0 !== strpos($baseUrl, 'http')) {
+            $baseUrl = 'https://'.$baseUrl;
+        }
+
+        $baseHost = parse_url($baseUrl, PHP_URL_HOST);
+
+        if (empty($baseHost)) {
+            throw new \RuntimeException('Invalid base URL.');
+        }
+
+        $baseUri = 'https://'.$baseHost;
+
+        // Query API
+        $client = new \GuzzleHttp\Client(['base_uri' => $baseUri]);
         $response = $client->post(self::API_REGISTER, [
             'headers' => [
                 'Content-Type' => 'application/json',

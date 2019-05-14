@@ -12,9 +12,9 @@ declare(strict_types=1);
  */
 
 $GLOBALS['TL_LANG']['tl_iso_payment'] = array_merge($GLOBALS['TL_LANG']['tl_iso_payment'], [
-    'wirecardUser' => ['Username', 'Your username at Wirecard.'],
-    'wirecardPassword' => ['Password', 'Your password at Wirecard.'],
-    'wirecardMerchantId' => ['Merchant ID', 'Your merchant ID at Wirecard.'],
+    'wirecardUser' => ['Username', 'Your username from Wirecard.'],
+    'wirecardPassword' => ['Password', 'Your password from Wirecard.'],
+    'wirecardMerchantId' => ['Merchant Account ID (MAID)', 'Your "Merchant Account ID" ("MAID") from Wirecard.'],
     'wirecardSecret' => ['Secret', 'Your secret with Wirecard.'],
     'wirecardPaymentMethod' => ['Payment method', 'The payment method that should be used at Wirecard.'],
     'wirecardPaymentMethodBlank' => 'All available payment methods',
@@ -31,5 +31,5 @@ $GLOBALS['TL_LANG']['tl_iso_payment'] = array_merge($GLOBALS['TL_LANG']['tl_iso_
         'sepadirectdebit' => 'SEPA Direct Debit',
         'sofortbanking' => 'Pay now with Klarna',
     ],
-    'wirecardTestApi' => ['Test API', 'Enable the test API host name.'],
+    'wirecardBaseUrl' => ['Base URL', 'The base URL of the payment page API given by Wirecard.'],
 ]);

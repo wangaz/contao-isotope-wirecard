@@ -14,7 +14,7 @@ declare(strict_types=1);
 $GLOBALS['TL_LANG']['tl_iso_payment'] = array_merge($GLOBALS['TL_LANG']['tl_iso_payment'], [
     'wirecardUser' => ['Benutzername', 'Ihr Benutzername bei Wirecard.'],
     'wirecardPassword' => ['Passwort', 'Ihr Passwort bei Wirecard.'],
-    'wirecardMerchantId' => ['Händler ID', 'Ihre Händler ID bei Wirecard.'],
+    'wirecardMerchantId' => ['Merchant Account ID (MAID)', 'Ihre "Merchant Account ID" ("MAID") bei Wirecard.'],
     'wirecardSecret' => ['Secret', 'Ihr Secret bei Wirecard.'],
     'wirecardPaymentMethod' => ['Bezahlmethode', 'Die Bezahlmethode, die bei Wirecard benutzt werden soll.'],
     'wirecardPaymentMethodBlank' => 'Alle verfügbaren Bezahlmethoden',
@@ -31,5 +31,5 @@ $GLOBALS['TL_LANG']['tl_iso_payment'] = array_merge($GLOBALS['TL_LANG']['tl_iso_
         'sepadirectdebit' => 'SEPA-Lastschrift',
         'sofortbanking' => 'Sofortüberweisung',
     ],
-    'wirecardTestApi' => ['Test API', 'Die Testumgebung aktivieren..'],
+    'wirecardBaseUrl' => ['Base URL', 'Die Basis URL, die von Wirecard für die Zahlungsschnittstelle übermittelt wurde.'],
 ]);
