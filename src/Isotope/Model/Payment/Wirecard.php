@@ -86,7 +86,7 @@ class Wirecard extends Postsale implements IsotopePayment
         if ($this->wirecardPaymentMethod) {
             $parameters['payment-methods'] = [
                 'payment-method' => [
-                    'name' => $this->wirecardPaymentMethod,
+                    ['name' => $this->wirecardPaymentMethod]
                 ],
             ];
         }
