@@ -106,18 +106,54 @@ class Wirecard extends Postsale implements IsotopePayment
 
         $baseUri = 'https://'.$baseHost;
 
-        // Query API
-        $client = new \GuzzleHttp\Client(['base_uri' => $baseUri]);
-        $response = $client->post(self::API_REGISTER, [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Basic '.base64_encode($this->wirecardUser.':'.$this->wirecardPassword),
-            ],
-            'body' => json_encode(['payment' => $parameters]),
-        ]);
+        /** @var \Psr\Log\LoggerInterface $logger */
+        $logger = System::getContainer()->get('monolog.logger.contao');
 
         try {
+            // Initialize the client
+            $client = new \GuzzleHttp\Client(['base_uri' => $baseUri]);
+
+            // Create the payment request body
+            $body = json_encode(['payment' => $parameters]);
+
+            // Log the request body
+            $logger->debug('Wirecard request body: ' . $body);
+
+            // Initiate the pamyent session
+            $response = $client->post(self::API_REGISTER, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Basic '.base64_encode($this->wirecardUser.':'.$this->wirecardPassword),
+                ],
+                'body' => json_encode(['payment' => $parameters]),
+            ]);
+        
+            // Get the payment session response body
             $result = @json_decode((string) $response->getBody(), true);
+        } catch(\GuzzleHttp\Exception\ClientException $e) {
+            // Get the error response body
+            $body = (string) $e->getResponse()->getBody();
+            $decodedBody = @json_decode($body);
+            $errors = [];
+
+            // Log the response body
+            $logger->debug('Wirecard response body: ' . $body);
+
+            // Compile the errors
+            if (!empty($decodedBody) && isset($decodedBody->errors) && !empty($decodedBody->errors)) {
+                foreach ($decodedBody->errors as $error) {
+                    if (isset($error->description)) {
+                        $errors[] = $error->description;
+                    }
+                }
+            }
+
+            if (empty($errors)) {
+                $errors[] = $e->getMessage();
+            }
+
+            System::log('Error while initialising Wirecard payment session for order ID '.$order->getId().': '.implode(' | ', $errors), __METHOD__, TL_ERROR);
+            throw new RedirectResponseException($failUrl);
         } catch (\Exception $e) {
             System::log('Error while initialising Wirecard payment session for order ID '.$order->getId().': '.$e->getMessage(), __METHOD__, TL_ERROR);
             throw new RedirectResponseException($failUrl);
