@@ -32,6 +32,25 @@ class Wirecard extends Postsale implements IsotopePayment
     protected const API_REGISTER = '/api/payment/register';
 
     /**
+     * The available payment methods and transaction type mappings.
+     *
+     * @var array
+     */
+    public static $paymentMethods = [
+        'creditcard' => 'purchase',
+        'alipay-xborder' => 'debit',
+        'bancontact' => 'debit',
+        'eps' => 'debit',
+        'ideal' => 'debit',
+        'paybox' => 'purchase',
+        'paypal' => 'debit',
+        'paysafecard' => 'debit',
+        'p24' => 'debit',
+        'sepadirectdebit' => 'debit',
+        'sofortbanking' => 'debit',
+    ];
+
+    /**
      * This does not actually show a form. Instead it initialises the Wirecard
      * payment session and throws a RedirectResponseException to redirect the
      * user to the Hosted Wirecard Payment Page.
@@ -61,14 +80,23 @@ class Wirecard extends Postsale implements IsotopePayment
             throw new RedirectResponseException($failUrl);
         }
 
+        if (empty($this->wirecardPaymentMethod) || !isset(self::$paymentMethods[$this->wirecardPaymentMethod])) {
+            throw new \RuntimeException('Invalid payment method defined in payment module.');
+        }
+
         // Define the rest of the parameters
         $parameters = [
             'merchant-account-id' => ['value' => $this->wirecardMerchantId],
             'request-id' => $order->getUniqueId(),
-            'transaction-type' => 'authorization',
+            'transaction-type' => self::$paymentMethods[$this->wirecardPaymentMethod],
             'requested-amount' => [
                 'value' => $order->getTotal(),
                 'currency' => $order->getCurrency(),
+            ],
+            'payment-methods' => [
+                'payment-method' => [
+                    ['name' => $this->wirecardPaymentMethod],
+                ],
             ],
             'account-holder' => $accountHolder,
             'success-redirect-url' => $basePath.'/'.$module->generateUrlForStep('complete', $order),
@@ -76,20 +104,12 @@ class Wirecard extends Postsale implements IsotopePayment
             'cancel-redirect-url' => $failUrl,
             'notifications' => [
                 'format' => 'application/json-signed',
-                'notification' => [[
-                    'url' => $basePath.'/system/modules/isotope/postsale.php?mod=pay&id='.$this->id,
-                ]],
-            ],
-        ];
-
-        // Check for payment method
-        if ($this->wirecardPaymentMethod) {
-            $parameters['payment-methods'] = [
-                'payment-method' => [
-                    ['name' => $this->wirecardPaymentMethod]
+                'notification' => [
+                    ['url' => $basePath.'/system/modules/isotope/postsale.php?mod=pay&id='.$this->id],
                 ],
-            ];
-        }
+            ],
+            'descriptor' => $this->getRequest()->getHost(),
+        ];
 
         // Process base URL
         $baseUrl = $this->wirecardBaseUrl;
@@ -113,37 +133,51 @@ class Wirecard extends Postsale implements IsotopePayment
             // Initialize the client
             $client = new \GuzzleHttp\Client(['base_uri' => $baseUri]);
 
-            // Create the payment request body
+            // Create the payment request body and headers
             $body = json_encode(['payment' => $parameters]);
+            $headers = [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Basic '.base64_encode($this->wirecardUser.':'.$this->wirecardPassword),
+            ];
 
-            // Log the request body
-            $logger->debug('Wirecard request body: ' . $body);
+            // Log the request
+            $logger->debug('Wirecard request URL: '.rtrim($baseUri, '/').self::API_REGISTER);
+            $logger->debug('Wirecard request headers: '.json_encode($headers));
+            $logger->debug('Wirecard request body: '.$body);
 
-            // Initiate the pamyent session
+            // Initiate the payment session
             $response = $client->post(self::API_REGISTER, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Authorization' => 'Basic '.base64_encode($this->wirecardUser.':'.$this->wirecardPassword),
-                ],
+                'headers' => $headers,
                 'body' => json_encode(['payment' => $parameters]),
             ]);
-        
+
             // Get the payment session response body
             $result = @json_decode((string) $response->getBody(), true);
-        } catch(\GuzzleHttp\Exception\ClientException $e) {
-            // Get the error response body
-            $body = (string) $e->getResponse()->getBody();
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $body = (string) $response->getBody();
             $decodedBody = @json_decode($body);
             $errors = [];
 
             // Log the response body
-            $logger->debug('Wirecard response body: ' . $body);
+            $logger->debug('Wirecard response '.$response->getStatusCode().': '.$body);
 
             // Compile the errors
             if (!empty($decodedBody) && isset($decodedBody->errors) && !empty($decodedBody->errors)) {
                 foreach ($decodedBody->errors as $error) {
                     if (isset($error->description)) {
                         $errors[] = $error->description;
+                    }
+                }
+            }
+
+            if (!empty($decodedBody) && isset($decodedBody->payment) && !empty($decodedBody->payment->statuses)) {
+                $statuses = $decodedBody->payment->statuses;
+                if (!empty($statuses->status)) {
+                    foreach ($statuses->status as $status) {
+                        if (isset($status->description)) {
+                            $errors[] = $status->description;
+                        }
                     }
                 }
             }
