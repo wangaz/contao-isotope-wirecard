@@ -1,39 +1,39 @@
 {
-	"name": "wangaz/contao-isotope-wirecard",
-	"description": "Wirecard payment module for Contao Isotope Ecommerce",
-	"keywords":["contao", "isotope", "payment", "wirecard"],
-	"type": "contao-bundle",
-	"homepage": "http://www.wangaz.com",
-	"license": "CC-BY-SA-4.0",
-	"authors":[
-		{
-			"name": "Wangaz.",
-			"homepage": "http://www.wangaz.com"
-		},
-		{
-			"name": "inspiredminds",
-			"homepage": "https://www.inspiredminds.at"
-		}
-	],
-	"support": {
-		"issues": "https://github.com/wangaz/contao-isotope-wirecard/issues",
-		"source": "https://github.com/wangaz/contao-isotope-wirecard",
-		"forum": "https://community.contao.org/de/showthread.php?49734"
-	},
-	"require": {
-		"php": ">=7.1",
-		"contao/core-bundle": "^4.4",
-		"isotope/isotope-core": "^2.0",
-		"symfony/config": "^3.2 || ^4.0",
-		"symfony/dependency-injection": "^3.2 || ^4.1.12",
-		"symfony/http-kernel": "^3.2 || ^4.0"
-	},
-	"autoload": {
-		"psr-4": {
-			"Wangaz\\ContaoIsotopeWirecardBundle\\": "src/"
-		}
-	},
-	"extra": {
-		"contao-manager-plugin": "Wangaz\\ContaoIsotopeWirecardBundle\\ContaoManagerPlugin"
-	}
+    "name": "wangaz/contao-isotope-wirecard",
+    "description": "Wirecard payment module for Contao Isotope Ecommerce",
+    "keywords": ["contao", "isotope", "payment", "wirecard"],
+    "type": "contao-bundle",
+    "homepage": "http://www.wangaz.com",
+    "license": "CC-BY-SA-4.0",
+    "authors":[
+        {
+            "name": "Wangaz.",
+            "homepage": "http://www.wangaz.com"
+        },
+        {
+            "name": "inspiredminds",
+            "homepage": "https://www.inspiredminds.at"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/wangaz/contao-isotope-wirecard/issues",
+        "source": "https://github.com/wangaz/contao-isotope-wirecard",
+        "forum": "https://community.contao.org/de/showthread.php?49734"
+    },
+    "require": {
+        "php": ">=7.1",
+        "contao/core-bundle": "^4.4",
+        "isotope/isotope-core": "^2.0",
+        "symfony/config": "^3.2 || ^4.0",
+        "symfony/dependency-injection": "^3.2 || ^4.1.12",
+        "symfony/http-kernel": "^3.2 || ^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wangaz\\ContaoIsotopeWirecardBundle\\": "src/"
+        }
+    },
+    "extra": {
+        "contao-manager-plugin": "Wangaz\\ContaoIsotopeWirecardBundle\\ContaoManagerPlugin"
+    }
 }
