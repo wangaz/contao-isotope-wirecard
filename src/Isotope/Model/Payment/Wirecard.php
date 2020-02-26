@@ -67,17 +67,26 @@ class Wirecard extends Postsale implements IsotopePayment
 
         // Define account holder
         $accountHolder = [];
+        /** @var \Isotope\Model\Address $billingAddress */
         $billingAddress = $order->getBillingAddress();
 
         if (!empty($billingAddress->firstname)) {
             $accountHolder['first-name'] = $billingAddress->firstname;
         }
 
-        if (!empty($billingAddress->lastname)) {
-            $accountHolder['last-name'] = $billingAddress->lastname;
+        if (!empty($billingAddress->lastname) || !empty($billingAddress->company)) {
+            $accountHolder['last-name'] = $billingAddress->lastname ?: $billingAddress->company;
         } else {
-            System::log('No last name defined in billing address for order ID '.$order->getId().', which is required by Wirecard', __METHOD__, TL_ERROR);
+            System::log('No last name or company defined in billing address for order ID '.$order->getId().', which is required by Wirecard.', __METHOD__, TL_ERROR);
             throw new RedirectResponseException($failUrl);
+        }
+
+        if (!empty($billingAddress->email)) {
+            $accountHolder['email'] = $billingAddress->email;
+        }
+
+        if (!empty($billingAddress->vat_no)) {
+            $accountHolder['tax-number'] = $billingAddress->vat_no;
         }
 
         if (empty($this->wirecardPaymentMethod) || !isset(self::$paymentMethods[$this->wirecardPaymentMethod])) {
