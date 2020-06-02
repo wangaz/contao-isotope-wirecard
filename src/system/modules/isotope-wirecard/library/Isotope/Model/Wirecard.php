@@ -33,9 +33,10 @@ class Wirecard extends Postsale implements IsotopePayment {
         }
         
         $strState = \Input::post('paymentState');
+        $strMessage = \Input::post('message');
         
         // log
-        \System::log('Update of payment status of Order ID "' . \Input::post('order_id') . '" (Wirecard): "' . $strState . '"', __METHOD__, TL_GENERAL);
+        \System::log('Update of payment status of Order ID "' . \Input::post('order_id') . '" (Wirecard): "' . $strState . '"' . (!empty($strMessage) ? ': ' . $strMessage : ''), __METHOD__, $strState == 'SUCCESS' ? TL_GENERAL : TL_ERROR);
         
         // ignore all cases except success
         if ($strState != 'SUCCESS')
