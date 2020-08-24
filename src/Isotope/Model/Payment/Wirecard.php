@@ -99,7 +99,7 @@ class Wirecard extends Postsale implements IsotopePayment
             'request-id' => $order->getUniqueId(),
             'transaction-type' => self::$paymentMethods[$this->wirecardPaymentMethod],
             'requested-amount' => [
-                'value' => $order->getTotal(),
+                'value' => number_format($order->getTotal(), 2),
                 'currency' => $order->getCurrency(),
             ],
             'payment-methods' => [
