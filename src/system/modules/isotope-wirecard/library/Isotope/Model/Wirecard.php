@@ -99,7 +99,7 @@ class Wirecard extends Postsale implements IsotopePayment {
 
         $objTemplate = new \Isotope\Template('iso_payment_wirecard');
         $objTemplate->setData($this->arrData);
-        $objTemplate->action = 'https://checkout.wirecard.com/page/init.php';
+        $objTemplate->action = 'https://api.qenta.com/page/init.php';
         $objTemplate->params = array_filter(array_diff_key($arrParams, array('secret' => '')));
 
         return $objTemplate->parse();
