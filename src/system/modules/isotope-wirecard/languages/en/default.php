@@ -12,4 +12,4 @@
 /**
  * Payment methods
  */
-$GLOBALS['TL_LANG']['MODEL']['tl_iso_payment.wirecard']	= array('Wirecard');
+$GLOBALS['TL_LANG']['MODEL']['tl_iso_payment']['wirecard'] = ['Wirecard'];
