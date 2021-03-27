@@ -58,7 +58,7 @@ class Wirecard extends Postsale implements IsotopePayment {
         // Store request data in order for future references
         $payment = StringUtil::deserialize($objOrder->payment_data, true);
         foreach ($_POST as $k => $v) {
-            $payment['POSTSALE'][$k] = Input::post($v);
+            $payment['POSTSALE'][$k] = Input::post($k);
         }
         $objOrder->payment_data = serialize($payment);
 
@@ -132,7 +132,7 @@ class Wirecard extends Postsale implements IsotopePayment {
             return parent::backendInterface($orderId);
         }
 
-        $template = new BackendTemplate('be_wirecard_payment_data');
+        $template = new BackendTemplate('be_iso_payment_data_wirecard');
         $template->name = $this->name;
         $template->type = $this->type;
         $template->payment = $payment['POSTSALE'];
