@@ -3,6 +3,12 @@
 use Contao\Environment;
 use Contao\StringUtil;
 
+$ignoredAttributes = [
+  'responseFingerprintOrder',
+  'responseFingerprint',
+  'REQUEST_TOKEN',
+];
+
 ?>
 
 <div id="tl_buttons">
@@ -15,7 +21,7 @@ use Contao\StringUtil;
   <tbody>
     <?php $i = 0; ?>
     <?php foreach($this->payment as $k => $v): ?>
-      <?php if (\is_array($v)) continue; ?>
+      <?php if (\is_array($v) || \in_array($k, $ignoredAttributes, true)) continue; ?>
       <tr>
         <td<?= ($i % 2 ? '' : ' class="tl_bg"') ?>><span class="tl_label"><?= $k ?></span></td>
         <td<?= ($i % 2 ? '' : ' class="tl_bg"') ?>><?= $v ?></td>
