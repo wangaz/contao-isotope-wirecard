@@ -1,0 +1,32 @@
+<?php
+
+use Contao\Environment;
+use Contao\StringUtil;
+
+$ignoredAttributes = [
+  'responseFingerprintOrder',
+  'responseFingerprint',
+  'REQUEST_TOKEN',
+];
+
+?>
+
+<div id="tl_buttons">
+  <a href="<?= ampersand(str_replace('&key=payment', '', Environment::get('request'))) ?>" class="header_back" title="<?= StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['backBT']) ?>"><?= $GLOBALS['TL_LANG']['MSC']['backBT'] ?></a>
+</div>
+
+<h2 class="sub_headline"><?= $this->name ?> (<?= $GLOBALS['TL_LANG']['MODEL']['tl_iso_payment'][$this->type][0] ?>)</h2>
+
+<table class="tl_show">
+  <tbody>
+    <?php $i = 0; ?>
+    <?php foreach($this->payment as $k => $v): ?>
+      <?php if (\is_array($v) || \in_array($k, $ignoredAttributes, true)) continue; ?>
+      <tr>
+        <td<?= ($i % 2 ? '' : ' class="tl_bg"') ?>><span class="tl_label"><?= $k ?></span></td>
+        <td<?= ($i % 2 ? '' : ' class="tl_bg"') ?>><?= $v ?></td>
+      </tr>
+      <?php ++$i; ?>
+    <?php endforeach; ?>
+  </tbody>
+</table>

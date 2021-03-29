@@ -11,9 +11,15 @@
 
 namespace Isotope\Model;
 
+use Contao\BackendTemplate;
+use Contao\Controller;
+use Contao\Environment;
+use Contao\Input;
+use Contao\PageModel;
+use Contao\StringUtil;
+use Contao\System;
 use Isotope\Interfaces\IsotopePayment;
 use Isotope\Interfaces\IsotopeProductCollection;
-use Isotope\Isotope;
 use Isotope\Model\Payment\Postsale;
 use Isotope\Model\ProductCollection\Order;
 
@@ -26,17 +32,17 @@ class Wirecard extends Postsale implements IsotopePayment {
      */
     public function processPostsale(IsotopeProductCollection $objOrder) {
         // check if both hashes match
-        if (\Input::post('requestFingerprint') == $this->calcHashPost()) {
-            \System::log('The given hash does not match for Order ID "' . \Input::post('order_id') . '" (Wirecard)', __METHOD__, TL_ERROR);
+        if (Input::post('requestFingerprint') == $this->calcHashPost()) {
+            System::log('The given hash does not match for Order ID "' . Input::post('order_id') . '" (Wirecard)', __METHOD__, TL_ERROR);
 
             return;
         }
         
-        $strState = \Input::post('paymentState');
-        $strMessage = \Input::post('message');
+        $strState = Input::post('paymentState');
+        $strMessage = Input::post('message');
         
         // log
-        \System::log('Update of payment status of Order ID "' . \Input::post('order_id') . '" (Wirecard): "' . $strState . '"' . (!empty($strMessage) ? ': ' . $strMessage : ''), __METHOD__, $strState == 'SUCCESS' ? TL_GENERAL : TL_ERROR);
+        System::log('Update of payment status of Order ID "' . Input::post('order_id') . '" (Wirecard): "' . $strState . '"' . (!empty($strMessage) ? ': ' . $strMessage : ''), __METHOD__, $strState == 'SUCCESS' ? TL_GENERAL : TL_ERROR);
         
         // ignore all cases except success
         if ($strState != 'SUCCESS')
@@ -44,10 +50,17 @@ class Wirecard extends Postsale implements IsotopePayment {
 
 		// perform checkout
         if (!$objOrder->checkout()) {
-            \System::log('Postsale checkout for Order ID "' . \Input::post('order_id') . '" failed', __METHOD__, TL_ERROR);
+            System::log('Postsale checkout for Order ID "' . Input::post('order_id') . '" failed', __METHOD__, TL_ERROR);
 
             return;
         }
+
+        // Store request data in order for future references
+        $payment = StringUtil::deserialize($objOrder->payment_data, true);
+        foreach ($_POST as $k => $v) {
+            $payment['POSTSALE'][$k] = Input::post($k);
+        }
+        $objOrder->payment_data = serialize($payment);
 
 		// update status
         $objOrder->date_paid = time();
@@ -72,8 +85,8 @@ class Wirecard extends Postsale implements IsotopePayment {
      */
     public function checkoutForm(IsotopeProductCollection $objOrder, \Module $objModule) {  
     	// get current host and       
-    	$strDescription = \Environment::get('host');
-    	$objContact		= \PageModel::findWithDetails($this->wirecard_contact);
+    	$strDescription = Environment::get('host');
+    	$objContact		= PageModel::findWithDetails($this->wirecard_contact);
 
         $arrParams = array(
             'customerId'			=> $this->wirecard_customer_id,
@@ -82,11 +95,11 @@ class Wirecard extends Postsale implements IsotopePayment {
             'amount'				=> number_format($objOrder->getTotal(), 2, '.', ''),
             'currency'				=> $objOrder->currency,
             'orderDescription'		=> $strDescription,
-            'successUrl'			=> \Environment::get('base') . $objModule->generateUrlForStep('complete', $objOrder),
-            'cancelUrl'				=> \Environment::get('base') . $objModule->generateUrlForStep('failed'),
-            'failureUrl'			=> \Environment::get('base') . $objModule->generateUrlForStep('failed'),
-            'serviceUrl'			=> \Environment::get('base') . \Controller::generateFrontendUrl($objContact->row()),
-            'confirmUrl'			=> \Environment::get('base') . 'system/modules/isotope/postsale.php?mod=pay&id=' . $this->id,
+            'successUrl'			=> Environment::get('base') . $objModule->generateUrlForStep('complete', $objOrder),
+            'cancelUrl'				=> Environment::get('base') . $objModule->generateUrlForStep('failed'),
+            'failureUrl'			=> Environment::get('base') . $objModule->generateUrlForStep('failed'),
+            'serviceUrl'			=> Environment::get('base') . Controller::generateFrontendUrl($objContact->row()),
+            'confirmUrl'			=> Environment::get('base') . 'system/modules/isotope/postsale.php?mod=pay&id=' . $this->id,
             'customerStatement'		=> $strDescription,
             'order_id'				=> $objOrder->id,
             'order_uniqid'			=> $objOrder->uniqid,
@@ -103,6 +116,28 @@ class Wirecard extends Postsale implements IsotopePayment {
         $objTemplate->params = array_filter(array_diff_key($arrParams, array('secret' => '')));
 
         return $objTemplate->parse();
+    }
+
+    public function backendInterface($orderId)
+    {
+        $order = Order::findByPk($orderId);
+
+        if (null === $order) {
+            return parent::backendInterface($orderId);
+        }
+
+        $payment = StringUtil::deserialize($order->payment_data);
+
+        if (empty($payment) || empty($payment['POSTSALE'])) {
+            return parent::backendInterface($orderId);
+        }
+
+        $template = new BackendTemplate('be_iso_payment_data_wirecard');
+        $template->name = $this->name;
+        $template->type = $this->type;
+        $template->payment = $payment['POSTSALE'];
+
+        return $template->parse();
     }
     
     /**
